@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware import Middleware
 from fastapi.responses import JSONResponse
 from api.face_recognition.face_recognition import face_router
+from api.license_plates.plates_recognition import recognition_router
 from core.exceptions import CustomException
 from core.extension.dependencies.logging import Logging
 from api import router
@@ -12,6 +13,7 @@ from api.home.home import home_router
 def init_routers(app: FastAPI) -> None:
     app.include_router(router)
     app.include_router(home_router)
+    app.include_router(recognition_router)
     
 def init_listeners(app: FastAPI) -> None:
     @app.exception_handler(CustomException)
