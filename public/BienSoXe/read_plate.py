@@ -51,7 +51,7 @@ digit_h = 60 # Kich thuoc ki tu
 
 model = keras.models.load_model('D:/KhoaLuanTonNghiep/License/CauHinhFlashAPI/BienSoXe/nnt_digit_cnn.h5',custom_objects={"custom_f1score": custom_f1score })
 
-def detection_SVM(Ivehicle):
+def detection(Ivehicle):
 
 
     Width = Ivehicle.shape[1]
