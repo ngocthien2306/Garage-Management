@@ -22,6 +22,8 @@ async def face_intr():
 @face_router.post('/face-extract')
 async def upload_image(plate_num: str, file: Union[UploadFile,None] = None):
     try:
+        print(plate_num)
+        print(file)
         if plate_num == '' or plate_num == None:
             return JSONResponse(
             status_code = status.HTTP_400_BAD_REQUEST,
@@ -32,7 +34,7 @@ async def upload_image(plate_num: str, file: Union[UploadFile,None] = None):
             status_code = status.HTTP_400_BAD_REQUEST,
             content = { 'message' : 'File can not null!' }
             ) 
-            
+        
         curDT = datetime.now()
         date_time = curDT.strftime("%m%d%Y-%H%M%S")
         path_img_origin = FACE_ORIGIN + plate_num 
@@ -65,6 +67,7 @@ async def upload_image(plate_num: str, file: Union[UploadFile,None] = None):
 @face_router.post('/face-verificaiton')
 async def face_verification(plate_num: str, file: Union[UploadFile,None] = None, file1: Union[UploadFile,None] = None):
     try:
+        print(file)
         img_path = "temp/" + file.filename
         async with aiofiles.open(img_path, 'wb') as out_file:
             content = await file.read()

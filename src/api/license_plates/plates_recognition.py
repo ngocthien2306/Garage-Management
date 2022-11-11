@@ -22,7 +22,7 @@ async def face_intr(file: Union[UploadFile,None] = None):
             
             
             img = cv2.imdecode(np.fromstring(file.file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
-            print(img)
+
             return read_plate.detection(img)
     except Exception as e:
         return JSONResponse(

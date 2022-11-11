@@ -185,8 +185,12 @@ def reconstruct(I, Iresized, Yr, lp_threshold):
 
 
     # LP size and type
-    out_size, lp_type = (two_lines, 2) if ((final_labels_frontal[0].wh()[0] / final_labels_frontal[0].wh()[1]) < 1.7) else (one_line, 1)
-
+    print(final_labels_frontal)
+    if(final_labels_frontal == []):
+        return 0,0,0
+    else:
+        out_size, lp_type = (two_lines, 2) if ((final_labels_frontal[0].wh()[0] / final_labels_frontal[0].wh()[1]) < 1.7) else (one_line, 1)
+    
     TLp = []
     if len(final_labels):
         final_labels.sort(key=lambda x: x.prob(), reverse=True)

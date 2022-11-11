@@ -4,6 +4,7 @@ import click
 import uvicorn
 
 
+
 def main():
     uvicorn.run(
         app="app.server:app",
