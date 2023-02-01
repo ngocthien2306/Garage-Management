@@ -205,50 +205,50 @@ async def user_verification(email:str, files: List[UploadFile]):
         
     
 
-# @face_router.post("/user/verification")
-# async def user_verification(email:str, files: List[UploadFile]):
+@face_router.post("/user/verification-v1")
+async def user_verification(email:str, files: List[UploadFile]):
 
-#     try:
-#         if files == None:
-#             return JSONResponse(
-#             status_code = status.HTTP_400_BAD_REQUEST,
-#             content = { 'message' : 'File can not null!' }
-#             ) 
-#         images = []
-#         img_user = read_image_user(email) / 255
-#         plt.imsave(TEMP_PATH + 'temp.png', img_user)
+    try:
+        if files == None:
+            return JSONResponse(
+            status_code = status.HTTP_400_BAD_REQUEST,
+            content = { 'message' : 'File can not null!' }
+            ) 
+        images = []
+        img_user = read_image_user(email) / 255
+        plt.imsave(TEMP_PATH + 'temp.png', img_user)
 
-#         for index, file in enumerate(files):
-#             img = cv2.imdecode(np.fromstring(file.file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
-#             face_extract = processing_images(img) 
-#             if len(face_extract) == 0:
-#                 return JSONResponse(
-#                 status_code = status.HTTP_400_BAD_REQUEST,
-#                 content = { 'message' : 'Not found face in frame' }
-#                 ) 
-#             images.append(face_extract)
+        for index, file in enumerate(files):
+            img = cv2.imdecode(np.fromstring(file.file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
+            face_extract = processing_images(img) 
+            if len(face_extract) == 0:
+                return JSONResponse(
+                status_code = status.HTTP_400_BAD_REQUEST,
+                content = { 'message' : 'Not found face in frame' }
+                ) 
+            images.append(face_extract)
         
-#         images = np.array(images) / 255
-#         image_pairs = []
-#         for index, image in enumerate(images):
-#             plt.imsave(TEMP_PATH + 'temp' + str(index) + ".png", image)
-#             image_pairs.append((img_user, image))
+        images = np.array(images) / 255
+        image_pairs = []
+        for index, image in enumerate(images):
+            plt.imsave(TEMP_PATH + 'temp' + str(index) + ".png", image)
+            image_pairs.append((img_user, image))
             
-#         image_pairs = np.array(image_pairs)
-#         print("predicting")
-#         scores = embedding_face.predict([image_pairs[:, 1, :], image_pairs[:, 0, :]])
-#         obj = {}
+        image_pairs = np.array(image_pairs)
+        print("predicting")
+        scores = embedding_face.predict([image_pairs[:, 1, :], image_pairs[:, 0, :]])
+        obj = {}
 
-#         for index, score in enumerate(scores):
+        for index, score in enumerate(scores):
 
-#             obj[index] = str(score[0])
+            obj[index] = str(score[0])
 
-#         return {"scores": dict(obj)}
+        return {"scores": dict(obj)}
     
-#     except Exception as e:
-#         return JSONResponse(
-#             status_code = status.HTTP_400_BAD_REQUEST,
-#             content = { 'message' : str(e) }
-#             )
+    except Exception as e:
+        return JSONResponse(
+            status_code = status.HTTP_400_BAD_REQUEST,
+            content = { 'message' : str(e) }
+            )
         
     
