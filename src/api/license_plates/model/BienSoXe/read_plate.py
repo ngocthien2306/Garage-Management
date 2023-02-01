@@ -120,6 +120,7 @@ class PlatesServices:
         side = int(ratio * self.Dmin)
         bound_dim = min(side, self.Dmax)
         print("test bug")
+        print(self.wpod_net.summary)
         _ , LpImg, lp_type = detect_lp(self.wpod_net, im2single(Ivehicle), bound_dim, lp_threshold=0.5)
         print("Type:", lp_type)
         if(LpImg == 0):

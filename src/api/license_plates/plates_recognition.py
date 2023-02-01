@@ -19,8 +19,6 @@ async def face_intr(file: Union[UploadFile,None] = None):
             content = { 'message' : 'File can not null!' }
             ) 
         else:
-            
-            
             img = cv2.imdecode(np.fromstring(file.file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
 
             return read_plate.detection(img)

@@ -7,4 +7,5 @@ class RegisterDto(BaseModel):
     re_password: str = Field(..., description="Pre-password to verify")
     birthday: str =  Field(..., description="Birthday")
     email: str =  Field(..., description="Email")
+    photoId: str = Field(..., description='Photo')
     

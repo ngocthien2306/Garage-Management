@@ -13,6 +13,7 @@ class AppUser(Model):
     password: str = Field(...)
     birthday: str = Field(...)
     email: str = Field(...)
+    
     class Config:
         allow_population_by_field_name = True
         schema_extra = {
@@ -21,7 +22,8 @@ class AppUser(Model):
                 "username": "ngocthien",
                 "password": "ngocthien",
                 "birthday": "23-06-2001",
-                "email": "nnt.itute@gmail.com"
+                "email": "nnt.itute@gmail.com",
+                "photoId": "photo"
             }
         }
         

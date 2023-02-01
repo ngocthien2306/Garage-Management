@@ -22,6 +22,21 @@ class FaceServices:
             status_code = status.HTTP_400_BAD_REQUEST,
             content = { 'message' : str(e) }
             )
+            
+    def create_track_vehicle(self, plate_num, img, start_time, end_time, x, y):
+        try:
+            data = self.track_data(plate_num, img, start_time, end_time, x, y)
+            track_collection.insert_one(data)
+            return JSONResponse(
+            status_code = status.HTTP_200_OK,
+            content = { 'message' : 'Save track successful', 'status': True}
+            )
+            
+        except Exception as e:
+            return JSONResponse(
+            status_code = status.HTTP_400_BAD_REQUEST,
+            content = { 'message' : str(e) }
+            )
     def find_track_by_plate(self, plate_num: str) -> dict:
         try:
             data = dict(track_collection.find({'plate_num': plate_num}).next())
@@ -38,6 +53,17 @@ class FaceServices:
             'detected_img': self.img_detected_path,
             'start_time': datetime.now(),
             'end_time': None
+        }
+    def track_data(self, plate_num, img, start_time, end_time, x, y):
+        return {
+            'plate_num': plate_num,
+            'detected_img': img,
+            'start_time': start_time,
+            'end_time': end_time,
+            'location': {
+                "x": x,
+                "y": y        
+            },  
         }
         
     

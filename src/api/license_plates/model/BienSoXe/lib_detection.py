@@ -2,6 +2,7 @@
 from os.path import splitext
 import cv2
 import numpy as np
+
 from tensorflow.keras.models import model_from_json
 
 
@@ -181,16 +182,12 @@ def reconstruct(I, Iresized, Yr, lp_threshold):
     final_labels = nms(labels, 0.1)
     final_labels_frontal = nms(labels_frontal, 0.1)
 
-
+    print(final_labels_frontal)
 
 
     # LP size and type
-    print(final_labels_frontal)
-    if(final_labels_frontal == []):
-        return 0,0,0
-    else:
-        out_size, lp_type = (two_lines, 2) if ((final_labels_frontal[0].wh()[0] / final_labels_frontal[0].wh()[1]) < 1.7) else (one_line, 1)
-    
+    out_size, lp_type = (two_lines, 2) if ((final_labels_frontal[0].wh()[0] / final_labels_frontal[0].wh()[1]) < 1.7) else (one_line, 1)
+
     TLp = []
     if len(final_labels):
         final_labels.sort(key=lambda x: x.prob(), reverse=True)
@@ -201,7 +198,7 @@ def reconstruct(I, Iresized, Yr, lp_threshold):
 
             Ilp = cv2.warpPerspective(I, H, out_size, borderValue=0)
             TLp.append(Ilp)
-
+    print(final_labels)
     return final_labels, TLp, lp_type
 
 def detect_lp(model, I, max_dim, lp_threshold):
@@ -215,7 +212,7 @@ def detect_lp(model, I, max_dim, lp_threshold):
 
     # Tiến hành resize ảnh
     Iresized = cv2.resize(I, (w, h))
-
+    
     T = Iresized.copy()
 
     # Chuyển thành Tensor
@@ -227,7 +224,7 @@ def detect_lp(model, I, max_dim, lp_threshold):
     # Remove các chiều =1 của Yr
     Yr = np.squeeze(Yr)
 
-
+    print(" Yr.shape ",Yr.shape)
 
     # Tái tạo và trả về các biến gồm: Nhãn, Ảnh biến số, Loại biển số (1: dài: 2 vuông)
     L, TLp, lp_type = reconstruct(I, Iresized, Yr, lp_threshold)
