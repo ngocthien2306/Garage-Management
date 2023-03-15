@@ -33,45 +33,6 @@ print("Well come to face_recognition API")
 async def face_intr():
     return Response(status_code=200, content='Hello Ngoc Thien')
 
-@face_router.post('/image/track')
-async def upload_img_test(plate_num: str, file: Union[UploadFile,None] = None):
-    try:
-        if plate_num == '' or plate_num == None:
-            return JSONResponse(
-            status_code = status.HTTP_400_BAD_REQUEST,
-            content = { 'message' : 'plate_num can not blank, please check again!' }
-            )  
-        if file == None:
-            return JSONResponse(
-            status_code = status.HTTP_400_BAD_REQUEST,
-            content = { 'message' : 'File can not null!' }
-            ) 
-
-        list_img =  []
-        curDT = datetime.now()
-        date_time = curDT.strftime("%m%d%Y-%H%M%S")
-        folder_img = FACE_DETECTED + plate_num
-        if isdir(folder_img) == False:     
-            os.makedirs(folder_img)
-        img = cv2.imdecode(np.fromstring(file.file.read(), np.uint8), cv2.IMREAD_UNCHANGED)
-        face_extract = processing_images(img) 
-        
-        if len(face_extract) == 0:
-            return JSONResponse(
-            status_code = status.HTTP_400_BAD_REQUEST,
-            content = { 'message' : 'Not found face in frame' }
-            ) 
-            
-        img_path = folder_img + "/" + date_time + ".jpg"  
-        plt.imsave(img_path, (face_extract/255))
-
-        face_sevices = FaceServices()
-        return face_sevices.create_track_vehicle(plate_num, img_path, datetime.now(), None, 0, 0)  
-    except Exception as e:
-        return JSONResponse(
-            status_code = status.HTTP_400_BAD_REQUEST,
-            content = { 'message' : str(e) }
-            )
         
 @face_router.post('/face-extract')
 async def upload_image(plate_num: str, file: Union[UploadFile,None] = None):
@@ -106,7 +67,7 @@ async def upload_image(plate_num: str, file: Union[UploadFile,None] = None):
             await out_file.write(content)
             
         img = cv2.imread(img_origin)
-        face_detected = DeepFace.detectFace(img_origin, detector_backend='opencv')
+        face_detected = DeepFace.detectFace(img_origin, detector_backend='ssd')
         plt.imsave(img_detected, face_detected)
         
         face_sevices = FaceServices(img_origin, img_detected, plate_num)
