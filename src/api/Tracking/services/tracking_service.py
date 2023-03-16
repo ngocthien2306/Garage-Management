@@ -4,6 +4,7 @@ from fastapi import status
 from bson import ObjectId
 from core.database.connection import track_collection
 from api.Tracking.dtos.trackingDto import TrackingDto
+from bson.objectid import ObjectId
 class TrackingServices:
     def __init__(self, parking=None):
         self.plate_num = parking
@@ -30,6 +31,20 @@ class TrackingServices:
             "status": data["status"],
         }
         return track
+    
+    def delete_track(self, query):
+        try:
+            result = track_collection.delete_many(query)
+            print(f"Deleted {result.deleted_count} documents.")
+            return JSONResponse(
+                status_code = 200,
+                content = { 'message' : "Delete all tracking successfull!" }
+            )
+        except Exception as e:
+            return JSONResponse(
+                status_code = status.HTTP_400_BAD_REQUEST,
+                content = { 'message' : str(e) }
+            )
     def calcTime(self,enter,exit):
         format="%H:%M:%S"
         #Parsing the time to str and taking only the hour,minute,second 
