@@ -3,8 +3,7 @@ import os
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1" # use only CPU in prediction
 
-predictor_load = ktrain.load_predictor('/data/thinhlv/thiennn/deeplearning/TextClassification/bert')
+#predictor_load = ktrain.load_predictor('/data/thinhlv/thiennn/deeplearning/TextClassification/bert')
 
 def get_prediction(x):
-	sent = predictor_load.predict([x])
-	return sent[0]
+	return None

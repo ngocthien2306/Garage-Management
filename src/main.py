@@ -10,7 +10,7 @@ def main():
         app="app.server:app",
         reload=True,
         workers=1,
-        port=8000
+        port=8003
     )
 
 
