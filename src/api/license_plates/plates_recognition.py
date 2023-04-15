@@ -88,7 +88,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     print("Chuoi bien so", listChar)
                 # Xử lý dữ liệu nhận được tại đây
                 # Gửi phản hồi về cho client
-                await websocket.send_text(f"Server received data")
+                await websocket.send_text(listChar)
     except Exception as e:
         print('message' ,str(e))
         return JSONResponse(
