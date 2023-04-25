@@ -13,17 +13,30 @@ from api.Tracking.services.tracking_service import TrackingServices
 from api.Tracking.dtos.trackingDto import TrackingDto
 from api.face_recognition.helper.face_helper import Embedding
 from api.face_recognition.services.face_service import FaceServices
-from core.database.connectionmmsql import *
+from core.database.connectionmssql import *
 tracking_router = APIRouter()
 tracking_services = TrackingServices()
 
 ## String configuration
 network = "r100"
-model_path = "/data/thinhlv/thiennn/deeplearning/insightface/recognition/arcface_torch/work_dirs/glint360k_cosface_r100_fp16_0.1/backbone.pth"
-image_path = "/data/thinhlv/thiennn/deeplearning/insightface/recognition/_datasets_/ms1m-retinaface-t1"
-result_dir = "/data/thinhlv/thiennn/deeplearning/insightface/recognition/arcface_torch/work_dirs/glint360k_cosface_r100_fp16_0.1"
-embedding = Embedding(model_path, (3, 112, 112), 128, network=network)
 
+#embedding = Embedding(model_path, (3, 112, 112), 128, network=network)
+
+from core.database.connectionmssql import SessionLocal, engine
+from core.database.model import model
+from sqlalchemy.orm import Session
+model.Base.metadata.create_all(bind=engine)
+# Dependency
+def get_db():
+    
+    db = SessionLocal()
+    try:
+        yield db
+    except Exception as e:
+        print(e)
+    finally:
+        
+        db.close()
 
 @tracking_router.post("/createPayment")
 async def createPayment(trackingDto: TrackingDto):
@@ -46,7 +59,8 @@ async def deleteAllTrack(trackingDto: TrackingDto):
             content = { 'message' : str(e) }
         )
 @tracking_router.post("/trackingVehicle")
-async def trackVehicle(plate_number: PlateNumberDto, file: Union[UploadFile,None] = None):
+async def trackVehicle(plate_number: PlateNumberDto, file: Union[UploadFile,None] = None,db: Session = Depends(get_db)):
+    
     try:
         start_time = time.time()
         if plate_number.plate_num == '' or plate_number.plate_num == None:
@@ -78,11 +92,12 @@ async def trackVehicle(plate_number: PlateNumberDto, file: Union[UploadFile,None
             
         face_detected = DeepFace.detectFace(img_origin, detector_backend='ssd', enforce_detection=False)
         cv2.imwrite(img_detected, face_detected[:,:,::-1]*255)
-        face_sevices = FaceServices(img_origin, img_detected, plate_number.plate_num)
-        face_sevices.add_face(Embedding.model, network, img_detected, FACE_DETECTED)
-        result = tracking_services.create_track_vehicle(plate_number, img_detected, date_time, "", 0, 0)
+        # face_sevices = FaceServices(img_origin, img_detected, plate_number.plate_num)
+        # face_sevices.add_face(Embedding.model, network, img_detected, FACE_DETECTED)
+        result = tracking_services.create_track_vehicle(db,plate_number, img_detected, date_time)
         endtime = time.time()
         print("the time excute of face_extract function is {}".format(endtime - start_time))
+        print(result)
         return result
     
     except Exception as e:

@@ -6,6 +6,11 @@ from api.Tracking.dtos.platenumberDto import PlateNumberDto
 from core.database.connection import track_collection
 from api.Tracking.dtos.trackingDto import TrackingDto
 from bson.objectid import ObjectId
+from sqlalchemy.orm import Session
+
+## Database  import settings
+from core.database.model import model
+
 class TrackingServices:
     def __init__(self, parking=None):
         self.plate_num = parking
@@ -56,9 +61,9 @@ class TrackingServices:
         enterTime = datetime.strptime(enterStr, format)
         exitTime = datetime.strptime(exitStr, format)
         return exitTime - enterTime
-    def create_track_vehicle(self, plate_number: PlateNumberDto, img_detected: str, time_track:datetime):
-        
-        return False
+    def create_track_vehicle(db:Session,self, plate_number: PlateNumberDto, img_detected: str, time_track:datetime):
+        ## Verify that the Plate Number
+        return db.query(model.Vehicle).filter(model.Vehicle.id == plate_number.plate_num).first()
     def createPayment(self, trackingDto: TrackingDto):
 
         payment = track_collection.find({
