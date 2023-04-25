@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from fastapi.responses import JSONResponse
 from fastapi import status
 from bson import ObjectId
+from api.Tracking.dtos.platenumberDto import PlateNumberDto
 from core.database.connection import track_collection
 from api.Tracking.dtos.trackingDto import TrackingDto
 from bson.objectid import ObjectId
@@ -55,6 +56,9 @@ class TrackingServices:
         enterTime = datetime.strptime(enterStr, format)
         exitTime = datetime.strptime(exitStr, format)
         return exitTime - enterTime
+    def create_track_vehicle(self, plate_number: PlateNumberDto, img_detected: str, time_track:datetime):
+        
+        return False
     def createPayment(self, trackingDto: TrackingDto):
 
         payment = track_collection.find({
