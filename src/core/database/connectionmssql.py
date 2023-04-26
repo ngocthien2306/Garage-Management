@@ -1,9 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 import os
-MMSQLCONNECT = os.environ.get("MMSQLCONNECT")
+SERVERNAME = os.environ.get("SERVERNAME")
 DBNAME = os.environ.get("DBNAME")
 PORT = os.environ.get("PORT")
+DRIVER = os.environ.get("DRIVER")
+USERNAME = os.environ.get("USERNAMEMMSQL")
+PASS = os.environ.get("PASSMMSQL")
+
 
 FACE_ORIGIN = os.environ.get("FACE_ORIGIN")
 FACE_DETECTED = os.environ.get("FACE_DETECTED")
@@ -11,8 +15,9 @@ MODELS_FACE_PATH = os.environ.get("MODELS_FACE_PATH")
 TEMP_PATH = os.environ.get("TEMP_PATH")
 
 SQLALCHEMY_DATABASE_URL = (
-    "mssql+pyodbc://sa:123456@DESKTOP-B2HV9SI/KIOSK?driver=ODBC+Driver+17+for+SQL+Server"
+    f"mssql+pyodbc://{USERNAME}:{PASS}@{SERVERNAME}:{PORT}/{DBNAME}?driver={DRIVER}"
 )
+print(SQLALCHEMY_DATABASE_URL)
 engine  = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread":False}
 )

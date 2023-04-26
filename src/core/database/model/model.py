@@ -4,25 +4,32 @@ from sqlalchemy.orm import relationship
 from core.database.connectionmssql import Base
 
 class Track(Base):
-    __tablename__ = "tblTrack"
+    __tablename__ = "tblTrackNew"
     trackId = Column(Integer, primary_key=True, index=True)
-    vehicleId = Column(Integer)
+    vehicleId = Column(Integer, ForeignKey('tblVehicleNew.id'))
+    driverId = Column(Integer)
     startTime = Column(String(20))
     endTime = Column(String(20), default=False)
     fee = Column(String(20), default=False)
     siteId= Column(Integer, default=False)
+    locationX = Column(String(20), default=False)
+    locationY = Column(String(20), default=False)
+    vehicle = relationship("Vehicle", back_populates="tracks")
     #items = relationship("Item", back_populates="owner")
 class Vehicle(Base):
-    __tablename__ = "tblVehicle"
+    __tablename__ = "tblVehicleNew"
     id = Column(Integer, primary_key=True, index=True)
     plateNum =Column(String(20), default=True)
-    location = Column(String(100), default=False)
+    status =Column(String(10), default=True)
+    typeTransport = Column(String(10), default=True)
+    typePlate = Column(String(10), default=True)
+    tracks = relationship("Track", back_populates="vehicle") # tạo quan hệ
 class Guest(Base):
-    __tablename__ = "tblGuest"
+    __tablename__ = "tblGuestNew"
     driverId = Column(Integer, primary_key=True, index=True)
-    vehicleId = Column(Integer,default=True)
     originPathFace =Column(String(100), default=True)
     detectPathFace =Column(String(100), default=False)
+    status = Column(String(10), default=True)
 
 class VehicleExtend(Base):
     __tablename__ = "tblVehicleExtend"

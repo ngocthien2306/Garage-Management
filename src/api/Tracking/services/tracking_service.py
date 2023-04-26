@@ -51,6 +51,15 @@ class TrackingServices:
                 status_code = status.HTTP_400_BAD_REQUEST,
                 content = { 'message' : str(e) }
             )
+    def checkidVehicle(self, plate_number: str, db: Session) -> Vehicle:
+        vehicle = db.query(model.Vehicle).filter(Vehicle.plateNum == plate_number).first()
+        return vehicle
+    def checkidVehicleInParking(self, vehicleId: int, db: Session) -> Track:
+        trackVehicle = db.query(model.Track).filter(
+            Track.vehicleId == vehicleId,
+            Track.endTime == "0"
+        ).first()
+        return trackVehicle
     def calcTime(self,enter,exit):
         format="%H:%M:%S"
         #Parsing the time to str and taking only the hour,minute,second 
@@ -66,34 +75,42 @@ class TrackingServices:
         try:
             with db.begin():
                 ## Create the Vehicle model
-                vehicle = Vehicle(
-                    plateNum=plate_number.plate_num,
-                    location= "0"
-                )
-                db.add(vehicle)
-                db.flush()
-                db.refresh(vehicle)
-                vehicleExtend = VehicleExtend(
-                    vehicleId= vehicle.id,
-                    status = "in",
-                    typeTransport = plate_number.typeTransport,
-                    typePlate = plate_number.typePlate
-                )
-                ## Check id Vehicle in vehicleExtend
-                db.add(vehicleExtend)
-                track = Track(
-                    vehicleId = vehicle.id,
-                    startTime = time_track,
-                    fee = "0",
-                    siteId ="1",
-                )
-                db.add(track)
+                # Check if the face car has arrived in the parking lot 
                 guest = Guest(
-                    vehicleId = vehicle.id,
-                    detectPathFace = "images/guest",
-                    originPathFace = "images/guest"
+                    detectPathFace = "images/guest", # IF Guest go to Garage in first -> detect same origin
+                    originPathFace = "images/guest", 
+                    status = "active"
                 )
                 db.add(guest)
+                db.flush()
+                db.refresh(guest)
+                ## Query vehicle in database
+                vehicleCheck = self.checkidVehicle(plate_number.plate_num,db)
+                if not vehicleCheck :
+                    vehicle = Vehicle(
+                        plateNum=plate_number.plate_num,
+                        status = "active",
+                        typeTransport = plate_number.typeTransport,
+                        typePlate = plate_number.typePlate
+                    )
+                    db.add(vehicle)
+                    db.flush()
+                    db.refresh(vehicle)
+                    vehicleCheck= vehicle
+                track = self.checkidVehicleInParking(vehicleCheck.id,db)
+                print(track)
+                if not track:
+                    trackVehicle = Track(
+                        vehicleId = vehicleCheck.id,
+                        driverId= guest.driverId,
+                        startTime = time_track,
+                        fee = "0",
+                        siteId ="1",
+                    )
+                    db.add(trackVehicle)
+                else:
+                    track.endTime =time_track
+
                 db.commit()
 
                 return {"message": "Vehicle created successfully."}
