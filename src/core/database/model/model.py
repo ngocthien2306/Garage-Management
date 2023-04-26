@@ -7,8 +7,8 @@ class Track(Base):
     __tablename__ = "tblTrack"
     trackId = Column(Integer, primary_key=True, index=True)
     vehicleId = Column(Integer)
-    startTime = Column(DateTime)
-    endTime = Column(DateTime, default=False)
+    startTime = Column(String(20))
+    endTime = Column(String(20), default=False)
     fee = Column(String(20), default=False)
     siteId= Column(Integer, default=False)
     #items = relationship("Item", back_populates="owner")
@@ -22,10 +22,14 @@ class Guest(Base):
     driverId = Column(Integer, primary_key=True, index=True)
     vehicleId = Column(Integer,default=True)
     originPathFace =Column(String(100), default=True)
-    detectPathPlate =Column(String(100), default=False)
+    detectPathFace =Column(String(100), default=False)
+
 class VehicleExtend(Base):
     __tablename__ = "tblVehicleExtend"
-    vehicleId = Column(Integer, primary_key=True, index=True)
+    #vehicle_id = Column(ForeignKey("tblVehicle.id"))
+    VehicleExtendId = Column(Integer, primary_key=True)
+    vehicleId = Column(Integer)
     status =Column(String(10), default=True)
     typeTransport = Column(String(10), default=True)
     typePlate = Column(String(10), default=True)
+    vehicleId.server_default = None

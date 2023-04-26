@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 ## Database  import settings
 from core.database.model import model
-
+from core.database.model.model import Vehicle, VehicleExtend,Track,Guest
 class TrackingServices:
     def __init__(self, parking=None):
         self.plate_num = parking
@@ -61,9 +61,45 @@ class TrackingServices:
         enterTime = datetime.strptime(enterStr, format)
         exitTime = datetime.strptime(exitStr, format)
         return exitTime - enterTime
-    def create_track_vehicle(db:Session,self, plate_number: PlateNumberDto, img_detected: str, time_track:datetime):
+    def create_track_vehicle(self, plate_number: PlateNumberDto, img_detected: str, time_track:str,db:Session):
         ## Verify that the Plate Number
-        return db.query(model.Vehicle).filter(model.Vehicle.id == plate_number.plate_num).first()
+        try:
+            with db.begin():
+                ## Create the Vehicle model
+                vehicle = Vehicle(
+                    plateNum=plate_number.plate_num,
+                    location= "0"
+                )
+                db.add(vehicle)
+                db.flush()
+                db.refresh(vehicle)
+                vehicleExtend = VehicleExtend(
+                    vehicleId= vehicle.id,
+                    status = "in",
+                    typeTransport = plate_number.typeTransport,
+                    typePlate = plate_number.typePlate
+                )
+                ## Check id Vehicle in vehicleExtend
+                db.add(vehicleExtend)
+                track = Track(
+                    vehicleId = vehicle.id,
+                    startTime = time_track,
+                    fee = "0",
+                    siteId ="1",
+                )
+                db.add(track)
+                guest = Guest(
+                    vehicleId = vehicle.id,
+                    detectPathFace = "images/guest",
+                    originPathFace = "images/guest"
+                )
+                db.add(guest)
+                db.commit()
+
+                return {"message": "Vehicle created successfully."}
+        except Exception as e:
+            db.rollback()
+            return {"message": "Error is"+ str(e)}        
     def createPayment(self, trackingDto: TrackingDto):
 
         payment = track_collection.find({
@@ -105,3 +141,4 @@ class TrackingServices:
         print(result.modified_count , data[0]["id"])
         #  Return rollback
         return  kq
+
