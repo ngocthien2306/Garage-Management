@@ -1,13 +1,14 @@
 from datetime import datetime
 from fastapi.responses import JSONResponse
 from fastapi import status
-from core.database.connection import track_collection
+from core.database.connectionmssql import  MODELS_FACE_PATH
 import os
 import pickle
 import tqdm
 import numpy as np
 import sklearn
 import torch
+import tensorflow.keras
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.preprocessing.image import load_img    
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -15,8 +16,21 @@ from api.face_recognition.helper.face_helper import generator_images, euclid_dis
 from deepface import DeepFace
 import pandas as pd
 import cv2
+from api.face_recognition.helper.face_helper import DistanceLayer, Embedding
 torch.cuda.empty_cache()
 from tqdm import tqdm
+## Load model Face recognition
+model_path = "D:/KhoaLuanTonNghiep/Garage-Management/public/models/backbone.pth"
+#model_path = "/data/thinhlv/thiennn/deeplearning/insightface/recognition/arcface_torch/work_dirs/ms1mv3_r50_onegpu/model.pt"
+image_path = "D:/KhoaLuanTonNghiep/Garage-Management/public/models/ms1m-retinaface-t1"
+result_dir = "/data/thinhlv/thiennn/deeplearning/insightface/recognition/arcface_torch/work_dirs/glint360k_cosface_r100_fp16_0.1"
+network = "r100"
+embedding = Embedding(model_path, (3, 112, 112), 128, network=network)
+
+embedding_face = tensorflow.keras.models.load_model(MODELS_FACE_PATH, 
+                custom_objects={
+                    "DistanceLayer": DistanceLayer
+                })
 class FaceServices:
     def __init__(self, img_origin_path=None, img_detected_path=None, plate_num=None):
         self.img_origin_path = img_origin_path
@@ -83,10 +97,12 @@ class FaceServices:
         img_representation = sklearn.preprocessing.normalize(embedding1 + embedding2) 
         return img_representation       
         
-    def create_track_vehicle(self, plate_num, img, start_time, end_time, x, y):
+    def face_track_vehicle(self, plate_num, img, start_time, end_time, x, y):
         try:
-            data = self.track_data(plate_num, img, start_time, end_time, x, y)
-            track_collection.insert_one(data)
+            
+            
+            
+            
             return JSONResponse(
             status_code = status.HTTP_200_OK,
             content = { 'message' : 'Save track successful', 'status': True}

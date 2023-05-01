@@ -15,16 +15,15 @@ MODELS_FACE_PATH = os.environ.get("MODELS_FACE_PATH")
 TEMP_PATH = os.environ.get("TEMP_PATH")
 
 SQLALCHEMY_DATABASE_URL = (
-    f"mssql+pyodbc://{USERNAME}:{PASS}@{SERVERNAME}:{PORT}/{DBNAME}?driver={DRIVER}"
+    f"mssql+pymssql://{USERNAME}:{PASS}@{SERVERNAME}:{PORT}/{DBNAME}"
 )
 print(SQLALCHEMY_DATABASE_URL)
 engine  = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread":False}
+    SQLALCHEMY_DATABASE_URL
 )
 SessionLocal = sessionmaker(autocommit= False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-import pyodbc
 
 # Dependency
 def get_db():
@@ -42,4 +41,5 @@ def execute_query(conn, query):
     cursor.execute(query)
     rows = cursor.fetchall()
     return rows
+
 

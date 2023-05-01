@@ -20,7 +20,6 @@ tracking_services = TrackingServices()
 ## String configuration
 network = "r100"
 
-#embedding = Embedding(model_path, (3, 112, 112), 128, network=network)
 
 from core.database.connectionmssql import SessionLocal, engine,get_db
 from core.database.model import model
@@ -72,7 +71,6 @@ async def trackVehicle(plate_number: PlateNumberDto, db: Session = Depends(get_d
 
         img_origin = path_img_origin + "/{}.jpg".format(date_time)
         img_detected = path_img_detected + "/{}.jpg".format(date_time)
-        print(img_detected)
         # face_sevices = FaceServices(img_origin, img_detected, plate_number.plate_num)
         # face_sevices.add_face(Embedding.model, network, img_detected, FACE_DETECTED)
         result = tracking_services.create_track_vehicle(plate_number, img_detected, date_time, db)
